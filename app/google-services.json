@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "282164145262",
+    "firebase_url": "https://studysathi-kotlin-default-rtdb.firebaseio.com",
+    "project_id": "studysathi-kotlin",
+    "storage_bucket": "studysathi-kotlin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282164145262:android:0ace06f3b53f5fad14ca7f",
+        "android_client_info": {
+          "package_name": "com.example.studysathi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgQnzE8CeRaHtyA1s-kLjxHRg8QRf5Iy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
