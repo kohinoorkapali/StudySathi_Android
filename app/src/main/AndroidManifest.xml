@@ -12,6 +12,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudySathi">
         <activity
+            android:name=".view.AddMaterial"
+            android:exported="true"
+            android:label="@string/title_activity_add_material"
+            android:theme="@style/Theme.StudySathi">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".view.SplashActivity"
             android:exported="true"
             android:label="@string/title_activity_splash"
@@ -44,17 +55,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".view.ui.theme.ForgotActivity"
-            android:exported="true"
-            android:label="@string/title_activity_forgot"
-            android:theme="@style/Theme.StudySathi">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".view.ForgotActivity"
             android:exported="true"
@@ -77,39 +78,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="true"
-            android:label="@string/title_activity_registration"
-            android:theme="@style/Theme.StudySathi">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Theme.StudySathi">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".SplashActivity"
-            android:exported="true"
-            android:label="@string/title_activity_splash"
-            android:theme="@style/Theme.StudySathi">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

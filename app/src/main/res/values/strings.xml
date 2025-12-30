@@ -6,4 +6,5 @@
     <string name="title_activity_dashboard">DashboardActivity</string>
     <string name="title_activity_forgot">ForgotActivity</string>
     <string name="title_activity_login_acticity">LoginActicity</string>
+    <string name="title_activity_add_material">AddMaterial</string>
 </resources>
