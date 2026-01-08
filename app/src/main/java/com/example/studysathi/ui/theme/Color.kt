@@ -22,3 +22,20 @@ val BluishWHite = Color(0xFFCCD1F5)
 val PaleBlue = Color(0xFFBEE4FF)
 
 val Lavendar = Color(0xFFD6B7FF)
+
+// Primary colors
+val PrimaryBlue = Color(0xFF1976D2)
+val LightBlue = Color(0xFF64B5F6)
+
+// Neutral colors
+val Gray100 = Color(0xFFEEEEEE)
+val Gray300 = Color(0xFFBDBDBD)
+val Gray500 = Color(0xFF9E9E9E)
+val DarkGray = Color(0xFF424242)
+val White = Color(0xFFFFFFFF)
+
+// Other colors
+val SoftBlue = Color(0xFF1976D2) // used for buttons
+val UploadColor = Color.Gray.copy(alpha = 0.6f)
+
+
