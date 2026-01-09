@@ -15,18 +15,24 @@ class MaterialRepoImpl : MaterialRepo {
         callback: (Boolean, String) -> Unit
     ) {
         val materialID = model.id.ifBlank { ref.push().key ?: "" }
+
         if (materialID.isBlank()) {
             callback(false, "Unable to generate material ID")
             return
         }
 
-        ref.child(materialID).setValue(model).addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Material added successfully")
-            } else {
-                callback(false, it.exception?.message ?: "Failed to add material")
+        // ✅ VERY IMPORTANT
+        val materialWithId = model.copy(id = materialID)
+
+        ref.child(materialID)
+            .setValue(materialWithId)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    callback(true, "Material added successfully")
+                } else {
+                    callback(false, it.exception?.message ?: "Failed to add material")
+                }
             }
-        }
     }
 
     override fun updateMaterial(

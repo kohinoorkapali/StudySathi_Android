@@ -1,11 +1,15 @@
 package com.example.studysathi.view
 
 import android.app.Activity
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,12 +54,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.studysathi.R
+import com.example.studysathi.repository.CommonRepoImpl
 import com.example.studysathi.repository.MaterialRepoImpl
 import com.example.studysathi.ui.theme.Gray500
 import com.example.studysathi.ui.theme.SoftBlue
 import com.example.studysathi.ui.theme.UploadColor
 import com.example.studysathi.ui.theme.White
 import com.example.studysathi.view.ui.theme.StudySathiTheme
+import com.example.studysathi.viewmodel.CommonViewModel
 import com.example.studysathi.viewmodel.MaterialViewModel
 
 class AddMaterial : ComponentActivity() {
@@ -71,46 +77,81 @@ class AddMaterial : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMaterialBody() {
-    val repo = remember { MaterialRepoImpl() }
-    val viewModel = remember { MaterialViewModel(repo) }
 
     val context = LocalContext.current
-    val activity = context as Activity
+    val backDispatcher =
+        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
-    // Collect states from ViewModel
-    val title by viewModel.title.collectAsState()
-    val stream by viewModel.stream.collectAsState()
-    val description by viewModel.description.collectAsState()
-    val status by viewModel.status.collectAsState()
+    val materialViewModel = remember { MaterialViewModel(MaterialRepoImpl()) }
+    val commonViewModel = remember { CommonViewModel(CommonRepoImpl()) }
+
+    val title by materialViewModel.title.collectAsState()
+    val stream by materialViewModel.stream.collectAsState()
+    val description by materialViewModel.description.collectAsState()
+    val status by materialViewModel.status.collectAsState()
+    val fileName by materialViewModel.fileName.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
-    val streams = listOf("Science", "Management", "Humanities", "Engineering", "Medical", "Law", "Other")
 
-    // Show Toast when status changes
-    LaunchedEffect (status) {
+    val streams = listOf(
+        "Science",
+        "Management",
+        "Humanities",
+        "Engineering",
+        "Medical",
+        "Law",
+        "Other"
+    )
+
+    // File picker
+    val fileLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                val name = commonViewModel.getFileName(context, it) ?: "file"
+                materialViewModel.setFile(it, name)
+                Toast.makeText(context, "Selected: $name", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    // Status toast
+    LaunchedEffect(status) {
         status?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            viewModel.clearStatus()
+            materialViewModel.clearStatus()
+            if (it.contains("success", true)) {
+                backDispatcher?.onBackPressed()
+            }
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Upload Notes", color = White) },
+                title = { Text("Upload Resource", color = White) },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24),
+                        contentDescription = "Back",
+                        tint = White,
+                        modifier = Modifier
+                            .clickable { backDispatcher?.onBackPressed() }
+                            .padding(12.dp)
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = SoftBlue,
-                    titleContentColor = White
+                    containerColor = SoftBlue
                 )
             )
         }
     ) { paddingValues ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(SoftBlue)
                 .padding(paddingValues)
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -118,25 +159,24 @@ fun AddMaterialBody() {
                         color = White,
                         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                     )
-                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .padding(16.dp)
             ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
+
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
                     // Title
                     item {
-                        Text("Resource Title", style = MaterialTheme.typography.labelLarge)
+                        Text("Resource Title")
                         OutlinedTextField(
                             value = title,
-                            onValueChange = { viewModel.setTitle(it) },
+                            onValueChange = materialViewModel::setTitle,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
 
-                    // Stream Dropdown
+                    // Stream
                     item {
-                        Text("Select Stream", style = MaterialTheme.typography.labelLarge)
+                        Text("Stream")
                         ExposedDropdownMenuBox(
                             expanded = expanded,
                             onExpandedChange = { expanded = !expanded }
@@ -145,21 +185,20 @@ fun AddMaterialBody() {
                                 value = stream,
                                 onValueChange = {},
                                 readOnly = true,
-                                placeholder = { Text("Choose a Stream") },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth()
+                                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                                }
                             )
                             ExposedDropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false }
                             ) {
-                                streams.forEach { selectedStream ->
+                                streams.forEach {
                                     DropdownMenuItem(
-                                        text = { Text(selectedStream) },
+                                        text = { Text(it) },
                                         onClick = {
-                                            viewModel.setStream(selectedStream)
+                                            materialViewModel.setStream(it)
                                             expanded = false
                                         }
                                     )
@@ -170,51 +209,78 @@ fun AddMaterialBody() {
 
                     // Description
                     item {
-                        Text("Description", style = MaterialTheme.typography.labelLarge)
+                        Text("Description")
                         OutlinedTextField(
                             value = description,
-                            onValueChange = { viewModel.setDescription(it) },
-                            placeholder = { Text("Describe the content, topics covered etc") },
+                            onValueChange = materialViewModel::setDescription,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(120.dp)
                         )
                     }
 
-                    // Upload Box (just placeholder)
+                    // Upload box
                     item {
-                        Text("Upload", style = MaterialTheme.typography.labelLarge)
+                        Text("Upload File")
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(120.dp)
-                                .border(BorderStroke(1.dp, UploadColor), shape = RoundedCornerShape(8.dp))
-                                .clickable { /* TODO: file picker */ },
+                                .border(
+                                    BorderStroke(1.dp, UploadColor),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .clickable { fileLauncher.launch("*/*") },
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.outline_upload_24),
-                                    contentDescription = "Upload Icon",
+                                    painter = painterResource(R.drawable.outline_upload_24),
+                                    contentDescription = null,
                                     tint = Gray500
                                 )
                                 Spacer(Modifier.height(8.dp))
-                                Text("Upload Pdf, ppt or word", color = Gray500)
+                                Text(
+                                    text = if (fileName.isNotEmpty())
+                                        fileName
+                                    else "Upload PDF, PPT, Word",
+                                    color = Gray500
+                                )
                             }
                         }
                     }
 
-                    // Submit Button
+                    // Upload button
                     item {
                         Button(
-                            onClick = { viewModel.uploadMaterial() },
+                            onClick = {
+                                val uri = materialViewModel.fileUri.value
+                                if (uri == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please select a file",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@Button
+                                }
+
+                                commonViewModel.uploadFile(context, uri) { url ->
+                                    if (url != null) {
+                                        materialViewModel.uploadMaterial()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Upload failed",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = SoftBlue,
                                 contentColor = White
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                            )
                         ) {
                             Text("Upload")
                         }
@@ -224,6 +290,7 @@ fun AddMaterialBody() {
         }
     }
 }
+
 
 
 
