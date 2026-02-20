@@ -2,6 +2,7 @@ package com.example.studysathi
 
 import android.content.Intent
 import android.os.Bundle
+import android.se.omapi.Session
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -36,25 +37,28 @@ import androidx.compose.ui.unit.dp
 import com.example.studysathi.ui.theme.StudySathiTheme
 import com.example.studysathi.view.AddMaterial
 import com.example.studysathi.view.HomeScreen
-import com.example.studysathi.view.NotificationScreen
 import com.example.studysathi.view.ProfileScreen
 import com.example.studysathi.view.SearchScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studysathi.model.Usermodel
+import com.example.studysathi.utlis.SessionManager
+import com.example.studysathi.view.MyResource
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val currentUser = SessionManager.currentUser
         setContent {
-            DashboardBody()
+            DashboardBody(currentUser)
         }
     }
 }
 
 @Composable
-fun DashboardBody() {
+fun DashboardBody(currentUser: Usermodel?) {
     val context = LocalContext.current
     var selectedIndex by remember { mutableStateOf(0) }
 
@@ -63,7 +67,7 @@ fun DashboardBody() {
     val listItems = listOf(
         NavItem(R.drawable.baseline_home_24),
         NavItem( R.drawable.baseline_search_24),
-        NavItem(R.drawable.baseline_notifications_24),
+        NavItem(R.drawable.baseline_folder_open_24),
         NavItem( R.drawable.baseline_person_24),
     )
 
@@ -113,7 +117,7 @@ fun DashboardBody() {
                 when (selectedIndex) {
                     0 -> HomeScreen()
                     1 -> SearchScreen()
-                    2 -> NotificationScreen()
+                    2 -> MyResource()
                     3 -> ProfileScreen()
                 }
             }
