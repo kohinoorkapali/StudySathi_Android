@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,6 +72,12 @@ fun SearchScreen() {
     // Sorting logic
     val sortedMaterials = if (sortByNewest) filteredMaterials.reversed() // Replace with .uploadedAt if available
     else filteredMaterials
+
+    var currentPage by remember { mutableStateOf(0) }
+    val itemsPerPage = 8
+    val totalPages = (sortedMaterials.size + itemsPerPage - 1) / itemsPerPage
+    val pagedItems = sortedMaterials.drop(currentPage * itemsPerPage).take(itemsPerPage)
+
 
     Column(
         modifier = Modifier
@@ -209,8 +216,7 @@ fun SearchScreen() {
 
         // --- 4. Material List ---
         Surface(
-            modifier = Modifier
-                .fillMaxSize(), // No padding here means it touches the edges
+            modifier = Modifier.fillMaxSize(),
             color = Color.White,
             shape = RoundedCornerShape(
                 topStart = 32.dp,
@@ -218,13 +224,42 @@ fun SearchScreen() {
             ),
             shadowElevation = 8.dp
         ) {
-            LazyColumn(
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(sortedMaterials) { material ->
-                    MaterialCard(material)
+
+                // 👇 SAME LazyColumn feel as before
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(pagedItems) { material ->
+                        MaterialCard(material)
+                    }
+                }
+
+                // Pagination buttons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = { if (currentPage > 0) currentPage-- },
+                        enabled = currentPage > 0
+                    ) { Text("Previous") }
+
+                    Text(
+                        text = "Page ${currentPage + 1} of $totalPages",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+
+                    Button(
+                        onClick = { if (currentPage < totalPages - 1) currentPage++ },
+                        enabled = currentPage < totalPages - 1
+                    ) { Text("Next") }
                 }
             }
         }
