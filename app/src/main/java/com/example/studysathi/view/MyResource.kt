@@ -93,7 +93,21 @@ fun MyResource() {
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(pagedItems) { material ->
-                            MaterialCard(material)
+                            MaterialCard(
+                                material = material,
+                                showActions = true, // This enables Edit/Delete buttons
+                                onEdit = {
+                                    // TODO: Navigate to edit screen or show edit dialog
+                                    // Example: editMaterial(material)
+                                },
+                                onDelete = {
+                                    // TODO: Delete the material
+//                                    materialViewModel.delete(material) {
+//                                        // Refresh after deletion
+//                                        materialViewModel.fetchAllMaterials()
+//                                    }
+                                }
+                            )
                         }
                     }
 
