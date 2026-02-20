@@ -94,7 +94,7 @@ fun SplashBody() {
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(R.drawable.studysathi_2), // replace with your logo
+                painter = painterResource(R.drawable.studysathi_2),
                 contentDescription = "StudySathi Logo",
                 modifier = Modifier
                     .size(350.dp)

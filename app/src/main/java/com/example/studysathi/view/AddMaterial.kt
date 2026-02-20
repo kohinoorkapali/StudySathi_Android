@@ -60,6 +60,7 @@ import com.example.studysathi.ui.theme.Gray500
 import com.example.studysathi.ui.theme.SoftBlue
 import com.example.studysathi.ui.theme.UploadColor
 import com.example.studysathi.ui.theme.White
+import com.example.studysathi.utlis.SessionManager
 import com.example.studysathi.view.ui.theme.StudySathiTheme
 import com.example.studysathi.viewmodel.CommonViewModel
 import com.example.studysathi.viewmodel.MaterialViewModel
@@ -112,6 +113,8 @@ fun AddMaterialBody() {
                 Toast.makeText(context, "Selected: $name", Toast.LENGTH_SHORT).show()
             }
         }
+
+
 
     // Status toast
     LaunchedEffect(status) {
@@ -254,25 +257,28 @@ fun AddMaterialBody() {
                     item {
                         Button(
                             onClick = {
-                                val uri = materialViewModel.fileUri.value
-                                if (uri == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please select a file",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                val currentUser = SessionManager.currentUser
+                                if (currentUser == null) {
+                                    Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
                                     return@Button
                                 }
 
-                                commonViewModel.uploadFile(context, uri) { url ->
+                                val fileUri = materialViewModel.fileUri.value
+                                if (fileUri == null) {
+                                    Toast.makeText(context, "Please select a file", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+
+                                // Upload file to Cloudinary
+                                commonViewModel.uploadFile(context, fileUri) { url ->
                                     if (url != null) {
-                                        materialViewModel.uploadMaterial()
+                                        // Pass the logged-in user info when saving
+                                        materialViewModel.uploadMaterial(
+                                            uploadedBy = currentUser.fullName, // or username
+                                            fileUrl = url
+                                        )
                                     } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Upload failed",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             },

@@ -39,6 +39,9 @@ import com.example.studysathi.view.HomeScreen
 import com.example.studysathi.view.NotificationScreen
 import com.example.studysathi.view.ProfileScreen
 import com.example.studysathi.view.SearchScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

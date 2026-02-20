@@ -17,17 +17,27 @@ class UserRepoImpl: UserRepo {
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val ref : DatabaseReference = database.getReference("Users")
 
-    override fun login(
-        email: String,
-        password: String,
-        Callback: (Boolean, String) -> Unit
-    ) {
-        auth.signInWithEmailAndPassword(email,password)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    Callback(true, "Login success")
+    override fun login(email: String, password: String, Callback: (Usermodel?, String) -> Unit) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val uid = auth.currentUser?.uid
+                    if (uid != null) {
+                        ref.child(uid).get().addOnSuccessListener { snapshot ->
+                            val user = snapshot.getValue(Usermodel::class.java)
+                            if (user != null) {
+                                Callback(user, "Login success")
+                            } else {
+                                Callback(null, "User data not found")
+                            }
+                        }.addOnFailureListener {
+                            Callback(null, it.message ?: "Failed to fetch user")
+                        }
+                    } else {
+                        Callback(null, "User ID not found")
+                    }
                 } else {
-                    Callback(false, "${it.exception?.message}")
+                    Callback(null, task.exception?.message ?: "Login failed")
                 }
             }
     }

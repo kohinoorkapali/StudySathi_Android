@@ -20,6 +20,9 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
     private val _status = MutableStateFlow<String?>(null)
     val status: StateFlow<String?> get() = _status
 
+    private val _materials = MutableStateFlow<List<MaterialModel>>(emptyList())
+    val materials: StateFlow<List<MaterialModel>> get() = _materials
+
     // Clear status after showing
     fun clearStatus() {
         _status.value = null
@@ -49,33 +52,41 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
      * Upload material metadata to Firebase DB
      * For now, file itself is not uploaded, just fileName
      */
-    fun uploadMaterial(onSuccess: (() -> Unit)? = null) {
+    fun uploadMaterial(uploadedBy: String, fileUrl: String, onSuccess: (() -> Unit)? = null) {
         val currentTitle = title.value.trim()
         val currentStream = stream.value.trim()
         val currentDescription = description.value.trim()
-        val currentFileName = fileName.value.trim()
 
         if (currentTitle.isEmpty() || currentStream.isEmpty() || currentDescription.isEmpty()) {
             _status.value = "Please fill all fields"
             return
         }
 
-        // Create MaterialModel
+        // Create MaterialModel including uploadedBy and fileUrl
         val material = MaterialModel(
             id = "",  // will be generated in repo
             title = currentTitle,
             stream = currentStream,
             description = currentDescription,
-            fileName = currentFileName
+            fileName = fileName.value, // original file name
+            uploadedBy = uploadedBy,
+            fileUrl = fileUrl
         )
 
         viewModelScope.launch {
             repo.addMaterial(material) { success, message ->
                 _status.value = message
                 if (success) {
-                    // call the success callback to navigate
                     onSuccess?.invoke()
                 }
+            }
+        }
+
+    }
+    fun fetchAllMaterials() {
+        repo.getAllMaterials { success, _, list ->
+            if (success) {
+                _materials.value = list
             }
         }
     }

@@ -3,7 +3,7 @@ package com.example.studysathi.repository
 import com.example.studysathi.model.Usermodel
 
 interface UserRepo {
-    fun login (email:String,password: String,Callback: (Boolean,String)-> Unit)
+    fun login(email: String, password: String, Callback: (Usermodel?, String) -> Unit)
 
     fun register(email: String,password: String,Callback: (Boolean, String, String) -> Unit)
 

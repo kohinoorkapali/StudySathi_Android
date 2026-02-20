@@ -44,10 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studysathi.DashboardActivity
 import com.example.studysathi.R
+import com.example.studysathi.model.Usermodel
 import com.example.studysathi.repository.UserRepoImpl
 import com.example.studysathi.ui.theme.Blue
 import com.example.studysathi.ui.theme.BluishWHite
 import com.example.studysathi.ui.theme.White0
+import com.example.studysathi.utlis.SessionManager
 import com.example.studysathi.view.ui.theme.StudySathiTheme
 
 class LoginActicity : ComponentActivity() {
@@ -181,8 +183,9 @@ fun LoginBody(){
                     }
 
                     // Call Firebase login
-                    userRepo.login(email, password) { success, message ->
-                        if (success) {
+                    userRepo.login(email, password) { user: Usermodel?, message: String ->
+                        if (user != null) {
+                            SessionManager.currentUser = user  // store the logged-in user
                             Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
                             val intent = Intent(context, DashboardActivity::class.java)
                             context.startActivity(intent)

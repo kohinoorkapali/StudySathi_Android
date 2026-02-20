@@ -6,11 +6,8 @@ import com.example.studysathi.model.Usermodel
 import com.example.studysathi.repository.UserRepo
 
 class UserViewModel(val repo: UserRepo): ViewModel() {
-    fun login(
-        email: String, password: String,
-        callback: (Boolean, String) -> Unit
-    ){
-        repo.login(email,password,callback)
+    fun login(email: String, password: String, callback: (Usermodel?, String) -> Unit) {
+        repo.login(email, password, callback)
     }
 
     fun register(
