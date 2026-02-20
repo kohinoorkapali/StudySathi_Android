@@ -52,7 +52,11 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
      * Upload material metadata to Firebase DB
      * For now, file itself is not uploaded, just fileName
      */
-    fun uploadMaterial(uploadedBy: String, fileUrl: String, onSuccess: (() -> Unit)? = null) {
+    fun uploadMaterial(
+        uploadedBy: String,
+        fileUrl: String,
+        onSuccess: (() -> Unit)? = null
+    ) {
         val currentTitle = title.value.trim()
         val currentStream = stream.value.trim()
         val currentDescription = description.value.trim()
@@ -62,26 +66,23 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
             return
         }
 
-        // Create MaterialModel including uploadedBy and fileUrl
         val material = MaterialModel(
             id = "",  // will be generated in repo
             title = currentTitle,
             stream = currentStream,
             description = currentDescription,
-            fileName = fileName.value, // original file name
+            fileName = fileName.value,
             uploadedBy = uploadedBy,
-            fileUrl = fileUrl
+            fileUrl = fileUrl,
+            uploadedAt = System.currentTimeMillis() // <-- add timestamp here
         )
 
         viewModelScope.launch {
             repo.addMaterial(material) { success, message ->
                 _status.value = message
-                if (success) {
-                    onSuccess?.invoke()
-                }
+                if (success) onSuccess?.invoke()
             }
         }
-
     }
     fun fetchAllMaterials() {
         repo.getAllMaterials { success, _, list ->

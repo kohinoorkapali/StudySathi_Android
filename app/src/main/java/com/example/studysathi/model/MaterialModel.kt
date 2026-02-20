@@ -7,7 +7,8 @@ data class MaterialModel(
     val description: String = "",
     val fileName: String = "",
     val uploadedBy: String = "", // who uploaded this
-    val fileUrl: String = ""     // Cloudinary URL of the file
+    val fileUrl: String = "",     // Cloudinary URL of the file
+    val uploadedAt: Long = System.currentTimeMillis() // timestamp in milliseconds
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
@@ -17,7 +18,8 @@ data class MaterialModel(
             "description" to description,
             "fileName" to fileName,
             "uploadedBy" to uploadedBy,
-            "fileUrl" to fileUrl
+            "fileUrl" to fileUrl,
+            "uploadedAt" to uploadedAt
         )
     }
 }
