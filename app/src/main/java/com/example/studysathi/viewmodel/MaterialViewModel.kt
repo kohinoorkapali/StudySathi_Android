@@ -9,38 +9,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
+class MaterialViewModel(private val repo: MaterialRepo) : ViewModel() {
     val title = MutableStateFlow("")
     val stream = MutableStateFlow("")
     val description = MutableStateFlow("")
-    val fileUri = MutableStateFlow<Uri?>(null) // optional for now
-    val fileName = MutableStateFlow("")       // store filename for now
+    val fileUri = MutableStateFlow<Uri?>(null)
+    val fileName = MutableStateFlow("")
 
-    // Status for UI
     private val _status = MutableStateFlow<String?>(null)
     val status: StateFlow<String?> get() = _status
 
     private val _materials = MutableStateFlow<List<MaterialModel>>(emptyList())
     val materials: StateFlow<List<MaterialModel>> get() = _materials
 
-    // Clear status after showing
-    fun clearStatus() {
-        _status.value = null
-    }
+    fun clearStatus() { _status.value = null }
 
-    // Setters
-    fun setTitle(value: String) {
-        viewModelScope.launch { title.value = value }
-    }
-
-    fun setStream(value: String) {
-        viewModelScope.launch { stream.value = value }
-    }
-
-    fun setDescription(value: String) {
-        viewModelScope.launch { description.value = value }
-    }
-
+    fun setTitle(value: String) { viewModelScope.launch { title.value = value } }
+    fun setStream(value: String) { viewModelScope.launch { stream.value = value } }
+    fun setDescription(value: String) { viewModelScope.launch { description.value = value } }
     fun setFile(uri: Uri, name: String) {
         viewModelScope.launch {
             fileUri.value = uri
@@ -48,12 +34,9 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
         }
     }
 
-    /**
-     * Upload material metadata to Firebase DB
-     * For now, file itself is not uploaded, just fileName
-     */
     fun uploadMaterial(
         uploadedBy: String,
+        uploadedById: String,
         fileUrl: String,
         onSuccess: (() -> Unit)? = null
     ) {
@@ -67,14 +50,15 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
         }
 
         val material = MaterialModel(
-            id = "",  // will be generated in repo
+            id = "",
             title = currentTitle,
             stream = currentStream,
             description = currentDescription,
             fileName = fileName.value,
             uploadedBy = uploadedBy,
+            uploadedById = uploadedById,   // ✅ ADDED
             fileUrl = fileUrl,
-            uploadedAt = System.currentTimeMillis() // <-- add timestamp here
+            uploadedAt = System.currentTimeMillis()
         )
 
         viewModelScope.launch {
@@ -84,12 +68,27 @@ class MaterialViewModel (private val repo: MaterialRepo) : ViewModel() {
             }
         }
     }
+
     fun fetchAllMaterials() {
         repo.getAllMaterials { success, _, list ->
-            if (success) {
-                _materials.value = list
-            }
+            if (success) _materials.value = list
         }
     }
 
+    /**
+     * Update all materials uploaded by this user to reflect new username
+     */
+    fun updateAllMaterialsUsername(userID: String, newUsername: String) {
+        viewModelScope.launch {
+            repo.getAllMaterials { success, _, list ->
+                if (success) {
+                    list.filter { it.uploadedById == userID }.forEach { material ->
+                        val updated = material.copy(uploadedBy = newUsername)
+                        repo.updateMaterial(material.id, updated) { _, _ -> }
+                    }
+                    fetchAllMaterials() // refresh local list
+                }
+            }
+        }
+    }
 }

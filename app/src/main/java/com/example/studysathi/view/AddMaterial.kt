@@ -274,9 +274,9 @@ fun AddMaterialBody() {
                                     if (url != null) {
                                         // Pass the logged-in user info when saving
                                         materialViewModel.uploadMaterial(
-                                            uploadedBy = currentUser.fullName, // or username
-                                            fileUrl = url,
-
+                                            uploadedBy = currentUser.username,   // or fullName if you prefer
+                                            uploadedById = currentUser.id,       // ✅ VERY IMPORTANT
+                                            fileUrl = url
                                         )
                                     } else {
                                         Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()

@@ -43,7 +43,7 @@ fun MaterialCard(
                 style = MaterialTheme.typography.bodySmall.copy(color = Color.DarkGray)
             )
 
-            if (showActions && material.uploadedBy == currentUser?.username) {
+            if (showActions && material.uploadedById == currentUser?.id) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     horizontalArrangement = Arrangement.End,
@@ -51,7 +51,7 @@ fun MaterialCard(
                 ) {
                     IconButton(onClick = { onEdit?.invoke() }) {
                         Icon(
-                            painter = painterResource(id = com.example.studysathi.R.drawable.baseline_edit_24), // your edit icon
+                            painter = painterResource(id = com.example.studysathi.R.drawable.baseline_edit_24),
                             contentDescription = "Edit Material",
                             tint = Color(0xFF0D47A1)
                         )
@@ -59,7 +59,7 @@ fun MaterialCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     IconButton(onClick = { onDelete?.invoke() }) {
                         Icon(
-                            painter = painterResource(id = com.example.studysathi.R.drawable.baseline_delete_24), // your delete icon
+                            painter = painterResource(id = com.example.studysathi.R.drawable.baseline_delete_24),
                             contentDescription = "Delete Material",
                             tint = Color.Red
                         )

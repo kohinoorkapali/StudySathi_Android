@@ -41,7 +41,7 @@ fun MyResource() {
         materialViewModel.fetchAllMaterials()
     }
 
-    val myMaterials = allMaterials.filter { it.uploadedBy == currentUser?.username }
+    val myMaterials = allMaterials.filter { it.uploadedById == currentUser?.id }
     val sortedMaterials = myMaterials.reversed()
 
     // Pagination state

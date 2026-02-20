@@ -6,7 +6,8 @@ data class MaterialModel(
     val stream: String = "",
     val description: String = "",
     val fileName: String = "",
-    val uploadedBy: String = "", // who uploaded this
+    val uploadedBy: String = "", // display name
+    val uploadedById: String = "", // immutable user id
     val fileUrl: String = "",     // Cloudinary URL of the file
     val uploadedAt: Long = System.currentTimeMillis() // timestamp in milliseconds
 ) {
@@ -18,6 +19,7 @@ data class MaterialModel(
             "description" to description,
             "fileName" to fileName,
             "uploadedBy" to uploadedBy,
+            "uploadedById" to uploadedById,
             "fileUrl" to fileUrl,
             "uploadedAt" to uploadedAt
         )
