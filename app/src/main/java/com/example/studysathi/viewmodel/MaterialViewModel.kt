@@ -75,6 +75,38 @@ class MaterialViewModel(private val repo: MaterialRepo) : ViewModel() {
         }
     }
 
+    fun updateMaterial(
+        id: String,
+        title: String,
+        stream: String,
+        description: String
+    ) {
+        viewModelScope.launch {
+
+            repo.getAllMaterials { success, _, list ->
+                if (success) {
+
+                    val oldMaterial = list.find { it.id == id }
+                    if (oldMaterial != null) {
+
+                        val updatedMaterial = oldMaterial.copy(
+                            title = title.trim(),
+                            stream = stream.trim(),
+                            description = description.trim()
+                        )
+
+                        repo.updateMaterial(id, updatedMaterial) { updateSuccess, message ->
+                            _status.value = message
+                            if (updateSuccess) {
+                                fetchAllMaterials() // refresh list
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Update all materials uploaded by this user to reflect new username
      */
