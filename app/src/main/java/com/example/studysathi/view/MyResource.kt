@@ -76,6 +76,7 @@ fun MyResource() {
     val pagedItems = sortedMaterials.drop(currentPage * itemsPerPage).take(itemsPerPage)
 
     var materialToEdit by remember { mutableStateOf<MaterialModel?>(null) }
+    var materialToDelete by remember { mutableStateOf<MaterialModel?>(null) }
 
     Column(
         modifier = Modifier
@@ -125,9 +126,7 @@ fun MyResource() {
                                 showActions = true,
                                 onEdit = { materialToEdit = material },
                                 onDelete = {
-//                                    materialViewModel.deleteMaterial(material.id) {
-//                                        materialViewModel.fetchAllMaterials()
-//                                    }
+                                    materialToDelete = material // <-- This shows the delete confirmation dialog
                                 }
                             )
                         }
@@ -156,9 +155,27 @@ fun MyResource() {
             }
         }
 
-        // =========================
-        // EDIT DIALOG
-        // =========================
+        //Delete
+        materialToDelete?.let { material ->
+            AlertDialog(
+                onDismissRequest = { materialToDelete = null },
+                title = { Text("Delete Material") },
+                text = { Text("Are you sure you want to delete \"${material.title}\"?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            materialViewModel.deleteMaterial(material.id)
+                            materialToDelete = null
+                        }
+                    ) { Text("Delete") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { materialToDelete = null }) { Text("Cancel") }
+                }
+            )
+        }
+
+       //EDIT DIALOGUE
         materialToEdit?.let { material ->
 
             var title by remember { mutableStateOf(material.title) }

@@ -107,9 +107,18 @@ class MaterialViewModel(private val repo: MaterialRepo) : ViewModel() {
         }
     }
 
-    /**
-     * Update all materials uploaded by this user to reflect new username
-     */
+    fun deleteMaterial(
+        id: String,
+        onComplete: ((Boolean, String) -> Unit)? = null
+    ) {
+        viewModelScope.launch {
+            repo.deleteMaterial(id) { success, message ->
+                _status.value = message
+                if (success) fetchAllMaterials() // refresh list
+                onComplete?.invoke(success, message)
+            }
+        }
+    }
     fun updateAllMaterialsUsername(userID: String, newUsername: String) {
         viewModelScope.launch {
             repo.getAllMaterials { success, _, list ->
