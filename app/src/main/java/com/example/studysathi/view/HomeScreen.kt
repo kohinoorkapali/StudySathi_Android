@@ -47,68 +47,72 @@ fun HomeScreen(onMaterialClick: (MaterialModel) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFF))
+            .background(Color.White) // Cleaner base color
     ) {
-        // --- REFINED HEADER ---
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF81D4FA))
-                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 12.dp) // Minimal top padding
+        // --- PREMIMUM HEADER ---
+        Surface(
+            color = Color(0xFFE3F2FD),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.studysathi_2),
-                contentDescription = "StudySathi Logo",
-                modifier = Modifier
-                    .width(120.dp)
-                    .wrapContentHeight(),
-                contentScale = ContentScale.Fit,
-                alignment = Alignment.TopStart
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Welcome to Study Sathi",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1976D2)
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.studysathi_2),
+                    contentDescription = "Logo",
+                    modifier = Modifier.height(35.dp),
+                    contentScale = ContentScale.Fit
                 )
-            )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Welcome, $userName",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0D47A1)
+                    )
+                )
+                Text(
+                    text = "What would you like to learn today?",
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF1565C0))
+                )
+            }
         }
 
+        // --- CONTENT AREA ---
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .background(Color(0xFFE3F2FD))
+                .padding(horizontal = 18.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            0xFFE3F2FD
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "Latest Resources",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFF1E293B)
                 )
             )
 
             Text(
-                text = "Recently uploaded study materials",
+                text = "Recently uploaded by your peers",
                 style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             val newestMaterials = materials.takeLast(9).reversed()
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                contentPadding = PaddingValues(bottom = 100.dp) // Space for FAB
             ) {
                 items(newestMaterials) { material ->
+                    // This calls your external MaterialCard component
                     MaterialCard(
                         material = material,
-                        onClick = { onMaterialClick(material) } // pass click callback
+                        onClick = { onMaterialClick(material) }
                     )
                 }
             }
