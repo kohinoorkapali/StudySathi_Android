@@ -1,6 +1,7 @@
 package com.example.studysathi.view
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,13 +19,16 @@ fun MaterialCard(
     material: MaterialModel,
     showActions: Boolean = false,
     onEdit: (() -> Unit)? = null,
-    onDelete: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null
 ) {
     val currentUser = SessionManager.currentUser
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick?.invoke() },
         colors = CardDefaults.cardColors(containerColor = Color(0xFFE1F5FE)),
         border = BorderStroke(1.dp, Color(0xFFBBDEFB)),
         elevation = CardDefaults.cardElevation(6.dp)

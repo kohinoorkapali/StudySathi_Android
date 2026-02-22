@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.firebase.analytics)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,6 +71,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.10.0")
     implementation("androidx.navigation:navigation-compose:2.9.7")
-
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
 
 }

@@ -34,7 +34,7 @@ import com.example.studysathi.repository.MaterialRepoImpl
 import com.example.studysathi.utlis.SessionManager
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onMaterialClick: (MaterialModel) -> Unit) {
     val currentUser = SessionManager.currentUser
     val userName = currentUser?.fullName ?: "Student"
     val materialViewModel = remember { MaterialViewModel(MaterialRepoImpl()) }
@@ -103,10 +103,13 @@ fun HomeScreen() {
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 80.dp) // Padding for bottom nav bar
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 items(newestMaterials) { material ->
-                    MaterialCard(material)
+                    MaterialCard(
+                        material = material,
+                        onClick = { onMaterialClick(material) } // pass click callback
+                    )
                 }
             }
         }

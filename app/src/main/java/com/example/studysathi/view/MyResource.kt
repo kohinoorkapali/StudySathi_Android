@@ -46,7 +46,7 @@ import com.example.studysathi.viewmodel.MaterialViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyResource() {
+fun MyResource(onMaterialClick: (MaterialModel) -> Unit){
 
     val context = LocalContext.current
     val currentUser = SessionManager.currentUser
@@ -125,9 +125,8 @@ fun MyResource() {
                                 material = material,
                                 showActions = true,
                                 onEdit = { materialToEdit = material },
-                                onDelete = {
-                                    materialToDelete = material // <-- This shows the delete confirmation dialog
-                                }
+                                onDelete = { materialToDelete = material },
+                                onClick = { onMaterialClick(material) } // <-- Add this line
                             )
                         }
                     }

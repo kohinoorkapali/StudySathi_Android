@@ -47,10 +47,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.studysathi.R
+import com.example.studysathi.model.MaterialModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen() {
+fun SearchScreen(onMaterialClick: (MaterialModel) -> Unit){
     val materialViewModel = remember { MaterialViewModel(MaterialRepoImpl()) }
     val allMaterials by materialViewModel.materials.collectAsState(initial = emptyList())
 
@@ -235,7 +236,10 @@ fun SearchScreen() {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(pagedItems) { material ->
-                        MaterialCard(material)
+                        MaterialCard(
+                            material = material,
+                            onClick = { onMaterialClick(material) } // <-- forward the click
+                        )
                     }
                 }
 
