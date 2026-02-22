@@ -57,17 +57,17 @@ fun SearchScreen(onMaterialClick: (MaterialModel) -> Unit){
 
     var searchQuery by remember { mutableStateOf("") }
     var expandedStream by remember { mutableStateOf(false) }
-    var selectedStream by remember { mutableStateOf("All Types") }
+    var selectedStream by remember { mutableStateOf("Stream") }
     var sortByNewest by remember { mutableStateOf(true) }
 
-    val streams = listOf("All Types", "Science", "Management", "Humanities", "Engineering", "Medical", "Law")
+    val streams = listOf("Stream", "Science", "Management", "Humanities", "Engineering", "Medical", "Law", "other")
 
     LaunchedEffect(Unit) { materialViewModel.fetchAllMaterials() }
 
     // Filtering logic
     val filteredMaterials = allMaterials.filter {
         (it.title.contains(searchQuery, true) || it.uploadedBy.contains(searchQuery, true)) &&
-                (selectedStream == "All Types" || it.stream == selectedStream)
+                (selectedStream == "Stream" || it.stream == selectedStream)
     }
 
     // Sorting logic
@@ -139,7 +139,7 @@ fun SearchScreen(onMaterialClick: (MaterialModel) -> Unit){
             horizontalArrangement = Arrangement.spacedBy(12.dp)
 
         ) {
-            // "All Types" Dropdown Filter
+            //  Dropdown Filter
             Box(modifier = Modifier.weight(1f)) {
                 ExposedDropdownMenuBox(
                     expanded = expandedStream,

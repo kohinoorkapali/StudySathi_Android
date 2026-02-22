@@ -43,7 +43,7 @@ fun ProfileScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE3F2FD)) // Matches your MyResource background
+            .background(Color(0xFFE3F2FD))
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

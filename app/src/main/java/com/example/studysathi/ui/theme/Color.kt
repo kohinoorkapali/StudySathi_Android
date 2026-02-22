@@ -35,7 +35,7 @@ val DarkGray = Color(0xFF424242)
 val White = Color(0xFFFFFFFF)
 
 // Other colors
-val SoftBlue = Color(0xFF1976D2) // used for buttons
+val SoftBlue = Color(0xFF2891FC) // used for buttons
 val UploadColor = Color.Gray.copy(alpha = 0.6f)
 
 
