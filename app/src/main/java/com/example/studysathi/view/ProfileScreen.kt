@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,150 +38,181 @@ fun ProfileScreen() {
     var fullName by remember { mutableStateOf(currentUser?.fullName ?: "") }
     var username by remember { mutableStateOf(currentUser?.username ?: "") }
     var email by remember { mutableStateOf(currentUser?.email ?: "") }
-
     var isEditing by remember { mutableStateOf(false) }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE3F2FD))
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFFE3F2FD)) // Matches your MyResource background
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // --- TOP SECTION (Avatar & Title) ---
+            Spacer(modifier = Modifier.height(40.dp))
 
-        Image(
-            painter = painterResource(R.drawable.baseline_person_24),
-            contentDescription = "Profile Image",
-            modifier = Modifier.size(100.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "My Profile",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF0D47A1)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Full Name
-        OutlinedTextField(
-            value = fullName,
-            onValueChange = { fullName = it },
-            label = { Text("Full Name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            enabled = isEditing
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            enabled = isEditing
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Email
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            enabled = isEditing
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (!isEditing) {
-            Button(
-                onClick = { isEditing = true },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
-            ) { Text("Edit Profile", color = Color.White) }
-        } else {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = Color.White,
+                shadowElevation = 4.dp,
+                modifier = Modifier.size(100.dp)
             ) {
-                Button(
-                    onClick = {
-                        currentUser?.let { user ->
-                            val updatedUser = user.copy(
-                                fullName = fullName,
-                                username = username,
-                                email = email
-                            )
+                Box(contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(R.drawable.baseline_person_24),
+                        contentDescription = "Profile Image",
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+            }
 
-                            // Save to Firebase
-                            userViewModel.editProfile(user.id, updatedUser) { success, message ->
-                                if (success) {
-                                    // Update local session
-                                    SessionManager.currentUser = updatedUser
+            Spacer(modifier = Modifier.height(12.dp))
 
-                                    // Update materials uploaded by user
-                                    materialViewModel.updateAllMaterialsUsername(user.id, username)
+            Text(
+                text = if (isEditing) "Edit Your Profile" else fullName,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0D47A1)
+            )
 
-                                    Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+            Text(
+                text = "@$username",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- INFO CARD ---
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                color = Color.White,
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                shadowElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Account Information",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E293B)
+                    )
+
+                    ProfileTextField(
+                        value = fullName,
+                        onValueChange = { fullName = it },
+                        label = "Full Name",
+                        enabled = isEditing
+                    )
+
+                    ProfileTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        label = "Username",
+                        enabled = isEditing
+                    )
+
+                    ProfileTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = "Email Address",
+                        enabled = isEditing
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // --- BUTTONS ---
+                    if (!isEditing) {
+                        Button(
+                            onClick = { isEditing = true },
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
+                        ) {
+                            Text("Edit Profile", fontWeight = FontWeight.Bold)
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    fullName = currentUser?.fullName ?: ""
+                                    username = currentUser?.username ?: ""
+                                    email = currentUser?.email ?: ""
                                     isEditing = false
-                                } else {
-                                    Toast.makeText(context, "Update failed: $message", Toast.LENGTH_SHORT).show()
-                                }
+                                },
+                                modifier = Modifier.weight(1f).height(56.dp),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text("Cancel")
+                            }
+
+                            Button(
+                                onClick = {
+                                    currentUser?.let { user ->
+                                        val updatedUser = user.copy(fullName = fullName, username = username, email = email)
+                                        userViewModel.editProfile(user.id, updatedUser) { success, message ->
+                                            if (success) {
+                                                SessionManager.currentUser = updatedUser
+                                                materialViewModel.updateAllMaterialsUsername(user.id, username)
+                                                Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
+                                                isEditing = false
+                                            }
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.weight(1f).height(56.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                            ) {
+                                Text("Save", fontWeight = FontWeight.Bold)
                             }
                         }
-                    },
-                    modifier = Modifier.weight(1f).height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
-                ) { Text("Update", color = Color.White) }
+                    }
 
-                Button(
-                    onClick = {
-                        fullName = currentUser?.fullName ?: ""
-                        username = currentUser?.username ?: ""
-                        email = currentUser?.email ?: ""
-                        isEditing = false
-                    },
-                    modifier = Modifier.weight(1f).height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                ) { Text("Cancel", color = Color.White) }
+                    // Logout stays at the bottom or separate
+                    TextButton(
+                        onClick = {
+                            SessionManager.currentUser = null
+                            val intent = Intent(context, LoginActicity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Logout from Account", color = Color.Red)
+                    }
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                // Clear session
-                SessionManager.currentUser = null
-
-                // Navigate to LoginActivity
-                val intent = Intent(context, LoginActicity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                context.startActivity(intent)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-        ) {
-            Text("Logout", color = Color.White)
-        }
     }
+}
+
+// Reusable component to keep code clean
+@Composable
+fun ProfileTextField(value: String, onValueChange: (String) -> Unit, label: String, enabled: Boolean) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        enabled = enabled,
+        colors = OutlinedTextFieldDefaults.colors(
+            disabledBorderColor = Color(0xFFEEEEEE),
+            disabledLabelColor = Color.Gray,
+            disabledTextColor = Color.Black
+        )
+    )
 }

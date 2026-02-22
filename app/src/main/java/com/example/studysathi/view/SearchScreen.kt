@@ -228,8 +228,6 @@ fun SearchScreen(onMaterialClick: (MaterialModel) -> Unit){
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-
-                // 👇 SAME LazyColumn feel as before
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(16.dp),
