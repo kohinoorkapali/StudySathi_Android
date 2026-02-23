@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -134,6 +135,7 @@ fun RegistrationBody() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .testTag("fullName")
             )
         }
 
@@ -153,6 +155,7 @@ fun RegistrationBody() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .testTag("username")
             )
         }
 
@@ -173,6 +176,7 @@ fun RegistrationBody() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .testTag("email")
             )
         }
 
@@ -192,7 +196,8 @@ fun RegistrationBody() {
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
+                    .padding(horizontal = 15.dp)
+                    .testTag("password"),
                 visualTransformation = if (visibility) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { visibility = !visibility }) {
@@ -225,6 +230,7 @@ fun RegistrationBody() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .testTag("confirmPassword")
             )
         }
 
@@ -272,6 +278,8 @@ fun RegistrationBody() {
                         }
                     }
                 },
+                modifier = Modifier
+                    .testTag("register"),
                 colors = ButtonDefaults.buttonColors(containerColor = Blue)
             ) {
                 Text("Register", fontWeight = FontWeight.Bold)
