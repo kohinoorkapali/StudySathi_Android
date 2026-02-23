@@ -4,13 +4,13 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -140,29 +140,35 @@ fun InfoRow(label: String, value: String) {
 // --- DOWNLOAD HELPER ---
 fun downloadFile(context: Context, url: String, fileName: String) {
     try {
-        val safeFileName = if (!fileName.contains('.')) "$fileName.pdf" else fileName
+        val safeFileName = if (!fileName.endsWith(".pdf")) "$fileName.pdf" else fileName
+        // 👇 LOG THE FULL URL HERE
+        Log.d("DownloadURL", "URL: $url")
 
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle(safeFileName)
             .setDescription("Downloading $safeFileName")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setNotificationVisibility(
+                DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+            )
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
-            // Set MIME type if you know it (PDF example)
-            .setMimeType("application/pdf")
 
-        // Save path: public Downloads folder (works for Android 9–13)
-        request.setDestinationInExternalPublicDir(
+        request.setDestinationInExternalFilesDir(
+            context,
             Environment.DIRECTORY_DOWNLOADS,
             safeFileName
         )
 
         val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        manager.enqueue(request)
+        val downloadId = manager.enqueue(request)
+
+        Log.d("DownloadID", "Enqueued with ID: $downloadId")
 
         Toast.makeText(context, "Downloading $safeFileName", Toast.LENGTH_SHORT).show()
+
     } catch (e: Exception) {
         e.printStackTrace()
+        Log.e("DownloadError", "Error: ${e.message}")
         Toast.makeText(context, "Download failed: ${e.message}", Toast.LENGTH_LONG).show()
     }
 }

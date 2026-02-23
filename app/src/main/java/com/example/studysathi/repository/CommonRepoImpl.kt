@@ -34,7 +34,7 @@ class CommonRepoImpl: CommonRepo {
                 val response = cloudinary.uploader().upload(
                     inputStream, ObjectUtils.asMap(
                         "public_id", fileName,
-                        "resource_type", "auto" // auto-detect file type
+                        "resource_type", "raw" // auto-detect file type
                     )
                 )
 
